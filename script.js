@@ -1,14 +1,11 @@
 const currentUser = localStorage.getItem("currentUser");
+let currentFilter = 'all';
 
 if (!currentUser) {
     window.location.href = "login.html";
 }
 
-document.getElementById("taskInput").addEventListener("keypress", function(event) {
-    if (event.key === "Enter") {
-        addTask();
-    }
-});
+document.getElementById("welcome").textContent = `Bonjour, ${currentUser} 👋`;
 
 let tasks = JSON.parse(localStorage.getItem(currentUser + "_tasks")) || [];
 
@@ -16,25 +13,45 @@ function saveTasks() {
     localStorage.setItem(currentUser + "_tasks", JSON.stringify(tasks));
 }
 
+function setFilter(filter) {
+    currentFilter = filter;
+    // Mise à jour visuelle des boutons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if(btn.innerText.toLowerCase().includes(filter === 'all' ? 'toutes' : filter === 'active' ? 'cours' : 'termin')) {
+            btn.classList.add('active');
+        }
+    });
+    displayTasks();
+}
+
 function displayTasks() {
     const taskList = document.getElementById("taskList");
     taskList.innerHTML = "";
 
-    // Si aucune tâche
-    if (tasks.length === 0) {
-        taskList.innerHTML = "<p style='text-align:center; color:gray;'>Aucune tâche pour le moment 👋</p>";
-        return;
-    }
+    const filteredTasks = tasks.filter(task => {
+        if (currentFilter === 'active') return !task.completed;
+        if (currentFilter === 'completed') return task.completed;
+        return true;
+    });
 
-    tasks.forEach((task, index) => {
+    filteredTasks.forEach((task, index) => {
         const li = document.createElement("li");
-        li.className = task.completed ? "completed" : "";
+        li.className = `animate__animated animate__fadeInUp ${task.completed ? "completed" : ""}`;
+        
+        const realIndex = tasks.indexOf(task);
 
         li.innerHTML = `
-            <span class="task-text" onclick="toggleTask(${index})">${task.name}</span>
+            <div class="task-info" onclick="toggleTask(${realIndex})">
+                <span class="task-text">${task.name}</span>
+                <div class="task-dates">
+                    <small>Créé le: ${task.createdAt}</small>
+                    ${task.dueDate ? `<small class="due-date">📅 Échéance: ${task.dueDate}</small>` : ''}
+                </div>
+            </div>
             <div class="actions">
-                <button class="btn-edit" onclick="editTask(${index})">✏️</button>
-                <button class="btn-delete" onclick="deleteTask(${index})">🗑️</button>
+                <button class="btn-edit" onclick="editTask(${realIndex})">✏️</button>
+                <button class="btn-delete" onclick="deleteTask(${realIndex})">🗑️</button>
             </div>
         `;
         taskList.appendChild(li);
@@ -43,19 +60,34 @@ function displayTasks() {
 
 function addTask() {
     const input = document.getElementById("taskInput");
+    const dateInput = document.getElementById("taskDueDate");
+    
     if (input.value.trim() === "") return;
 
-    tasks.push({ name: input.value, completed: false });
+    const newTask = {
+        name: input.value,
+        completed: false,
+        createdAt: new Date().toLocaleDateString('fr-FR'),
+        dueDate: dateInput.value || null
+    };
+
+    tasks.push(newTask);
     input.value = "";
+    dateInput.value = "";
 
     saveTasks();
     displayTasks();
 }
 
 function deleteTask(index) {
-    tasks.splice(index, 1);
-    saveTasks();
-    displayTasks();
+    const li = document.getElementById("taskList").children[index];
+    li.classList.replace('animate__fadeInUp', 'animate__fadeOutRight');
+    
+    setTimeout(() => {
+        tasks.splice(index, 1);
+        saveTasks();
+        displayTasks();
+    }, 500);
 }
 
 function editTask(index) {

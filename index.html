@@ -4,20 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Manager Pro</title>
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-<div class="container">
+<div class="container animate__animated animate__fadeIn">
     <div class="header-flex">
-        <h1>Ma Journée</h1>
+        <h1>Ma Journée Pro</h1>
         <button class="btn-logout" onclick="logout()">Déconnexion</button>
     </div>
     <p id="welcome"></p>
 
-    <div class="task-form">
-        <input type="text" id="taskInput" placeholder="Ajouter une tâche...">
-        <button class="btn-add" onclick="addTask()">Ajouter</button>
+    <!-- Formulaire étendu -->
+    <div class="task-form-container">
+        <input type="text" id="taskInput" placeholder="Quelle est la tâche ?">
+        <div class="date-inputs">
+            <label>Échéance : <input type="date" id="taskDueDate"></label>
+            <button class="btn-add" onclick="addTask()">Ajouter</button>
+        </div>
+    </div>
+
+    <!-- Filtres -->
+    <div class="filter-group">
+        <button class="filter-btn active" onclick="setFilter('all')">Toutes</button>
+        <button class="filter-btn" onclick="setFilter('active')">En cours</button>
+        <button class="filter-btn" onclick="setFilter('completed')">Terminées</button>
     </div>
 
     <ul id="taskList"></ul>
