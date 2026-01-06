@@ -1,23 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Task Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager Pro</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+<div class="container">
+    <div class="header-flex">
+        <h1>Ma Journée</h1>
+        <button class="btn-logout" onclick="logout()">Déconnexion</button>
+    </div>
+    <p id="welcome"></p>
 
-    <div class="container">
-        <h1>Task Management</h1>
-
-        <div class="task-form">
-            <input type="text" id="taskInput" placeholder="Enter a task">
-            <button onclick="addTask()">Add Task</button>
-        </div>
-
-        <ul id="taskList"></ul>
+    <div class="task-form">
+        <input type="text" id="taskInput" placeholder="Ajouter une tâche...">
+        <button class="btn-add" onclick="addTask()">Ajouter</button>
     </div>
 
-    <script src="script.js"></script>
+    <ul id="taskList"></ul>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>

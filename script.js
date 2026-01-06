@@ -1,38 +1,52 @@
-let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+const currentUser = localStorage.getItem("currentUser");
+
+if (!currentUser) {
+    window.location.href = "login.html";
+}
+
+document.getElementById("taskInput").addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+        addTask();
+    }
+});
+
+let tasks = JSON.parse(localStorage.getItem(currentUser + "_tasks")) || [];
 
 function saveTasks() {
-    localStorage.setItem("tasks", JSON.stringify(tasks));
+    localStorage.setItem(currentUser + "_tasks", JSON.stringify(tasks));
 }
 
 function displayTasks() {
     const taskList = document.getElementById("taskList");
     taskList.innerHTML = "";
 
+    // Si aucune tâche
+    if (tasks.length === 0) {
+        taskList.innerHTML = "<p style='text-align:center; color:gray;'>Aucune tâche pour le moment 👋</p>";
+        return;
+    }
+
     tasks.forEach((task, index) => {
         const li = document.createElement("li");
-
         li.className = task.completed ? "completed" : "";
 
         li.innerHTML = `
-            <span onclick="toggleTask(${index})">${task.name}</span>
+            <span class="task-text" onclick="toggleTask(${index})">${task.name}</span>
             <div class="actions">
-                <button onclick="editTask(${index})">Edit</button>
-                <button onclick="deleteTask(${index})">Delete</button>
+                <button class="btn-edit" onclick="editTask(${index})">✏️</button>
+                <button class="btn-delete" onclick="deleteTask(${index})">🗑️</button>
             </div>
         `;
-
         taskList.appendChild(li);
     });
 }
 
 function addTask() {
-    const taskInput = document.getElementById("taskInput");
-    const taskName = taskInput.value.trim();
+    const input = document.getElementById("taskInput");
+    if (input.value.trim() === "") return;
 
-    if (taskName === "") return;
-
-    tasks.push({ name: taskName, completed: false });
-    taskInput.value = "";
+    tasks.push({ name: input.value, completed: false });
+    input.value = "";
 
     saveTasks();
     displayTasks();
@@ -45,9 +59,9 @@ function deleteTask(index) {
 }
 
 function editTask(index) {
-    const newTask = prompt("Edit task:", tasks[index].name);
-    if (newTask !== null && newTask.trim() !== "") {
-        tasks[index].name = newTask;
+    const newName = prompt("Modifier la tâche :", tasks[index].name);
+    if (newName !== null && newName.trim() !== "") {
+        tasks[index].name = newName.trim();
         saveTasks();
         displayTasks();
     }
@@ -57,6 +71,11 @@ function toggleTask(index) {
     tasks[index].completed = !tasks[index].completed;
     saveTasks();
     displayTasks();
+}
+
+function logout() {
+    localStorage.removeItem("currentUser");
+    window.location.href = "login.html";
 }
 
 displayTasks();
